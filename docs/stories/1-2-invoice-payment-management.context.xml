@@ -1,0 +1,365 @@
+<story-context id="bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>2</storyId>
+    <title>Invoice & Payment Management</title>
+    <status>Draft</status>
+    <generatedAt>2025-11-09</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/story-mvp-invoicing-system-2.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>business user</asA>
+    <iWant>to create invoices with line items, manage invoice lifecycle, and record payments</iWant>
+    <soThat>I can track customer invoices and payments accurately</soThat>
+    <tasks>
+      <task epic="1" story="2" id="backend-domain">
+        <title>Backend - Domain Layer</title>
+        <acceptanceCriteria>AC: #1, #2, #4, #5, #6, #7, #11</acceptanceCriteria>
+        <subtasks>
+          <subtask>Create `src/main/java/com/invoiceme/domain/invoice/Invoice.java` - Invoice domain entity with lifecycle management</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/domain/invoice/InvoiceId.java` - Value object for invoice ID</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/domain/invoice/InvoiceStatus.java` - Enum for invoice states (Draft, Sent, Paid)</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/domain/invoice/InvoiceLineItem.java` - Value object for invoice line items</subtask>
+          <subtask>Implement state transition logic: Draft → Sent → Paid</subtask>
+          <subtask>Implement balance calculation logic (sum of quantity × unit price)</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/domain/payment/Payment.java` - Payment domain entity</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/domain/payment/PaymentId.java` - Value object for payment ID</subtask>
+          <subtask>Implement payment application logic (update invoice balance, trigger state transition)</subtask>
+          <subtask>Write unit tests for Invoice and Payment domain entities</subtask>
+        </subtasks>
+      </task>
+      <task epic="1" story="2" id="backend-application">
+        <title>Backend - Application Layer (CQRS)</title>
+        <acceptanceCriteria>AC: #1, #2, #3, #4, #6, #9, #10</acceptanceCriteria>
+        <subtasks>
+          <subtask>Create `src/main/java/com/invoiceme/application/commands/invoice/CreateInvoiceCommand.java` and handler</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/application/commands/invoice/AddLineItemCommand.java` and handler</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/application/commands/invoice/UpdateInvoiceCommand.java` and handler (only for Draft state)</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/application/commands/invoice/SendInvoiceCommand.java` and handler</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/application/queries/invoice/GetInvoiceQuery.java` and handler</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/application/queries/invoice/ListInvoicesQuery.java` and handler (with filters)</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/application/commands/payment/RecordPaymentCommand.java` and handler</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/application/queries/payment/GetPaymentQuery.java` and handler</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/application/queries/payment/ListPaymentsQuery.java` and handler</subtask>
+        </subtasks>
+      </task>
+      <task epic="1" story="2" id="backend-api">
+        <title>Backend - API Layer</title>
+        <acceptanceCriteria>AC: #1, #2, #3, #4, #6, #8, #9, #10, #12</acceptanceCriteria>
+        <subtasks>
+          <subtask>Create `src/main/java/com/invoiceme/api/invoices/InvoiceController.java` with REST endpoints</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/api/invoices/InvoiceDto.java` - DTO for invoice data transfer</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/api/invoices/InvoiceLineItemDto.java` - DTO for line items</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/api/payments/PaymentController.java` with REST endpoints</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/api/payments/PaymentDto.java` - DTO for payment data transfer</subtask>
+          <subtask>Create mappers for DTO ↔ Domain object conversion</subtask>
+          <subtask>Write integration tests for all Invoice and Payment API endpoints</subtask>
+        </subtasks>
+      </task>
+      <task epic="1" story="2" id="backend-infrastructure">
+        <title>Backend - Infrastructure Layer</title>
+        <acceptanceCriteria>AC: #1, #2, #3, #4, #6, #9, #10</acceptanceCriteria>
+        <subtasks>
+          <subtask>Create `src/main/java/com/invoiceme/infrastructure/persistence/invoice/InvoiceRepository.java` - JPA repository interface</subtask>
+          <subtask>Create `src/main/java/com/invoiceme/infrastructure/persistence/payment/PaymentRepository.java` - JPA repository interface</subtask>
+          <subtask>Create database migrations for invoices, invoice_line_items, and payments tables (if using Flyway)</subtask>
+        </subtasks>
+      </task>
+      <task epic="1" story="2" id="frontend-pages">
+        <title>Frontend - Pages</title>
+        <acceptanceCriteria>AC: #1, #2, #3, #4, #6, #8, #9, #10</acceptanceCriteria>
+        <subtasks>
+          <subtask>Create `src/app/(dashboard)/invoices/page.tsx` - Invoice list page with filters</subtask>
+          <subtask>Create `src/app/(dashboard)/invoices/[id]/page.tsx` - Invoice detail page</subtask>
+          <subtask>Create `src/app/(dashboard)/invoices/new/page.tsx` - Create invoice page</subtask>
+          <subtask>Create `src/app/(dashboard)/payments/page.tsx` - Payment list page</subtask>
+          <subtask>Create `src/app/(dashboard)/payments/new/page.tsx` - Record payment page</subtask>
+        </subtasks>
+      </task>
+      <task epic="1" story="2" id="frontend-components">
+        <title>Frontend - Components</title>
+        <acceptanceCriteria>AC: #1, #2, #3, #4, #6, #8</acceptanceCriteria>
+        <subtasks>
+          <subtask>Create `src/components/forms/InvoiceForm.tsx` - Invoice form component</subtask>
+          <subtask>Create `src/components/forms/PaymentForm.tsx` - Payment form component</subtask>
+          <subtask>Create line item management component (add/remove/edit line items)</subtask>
+          <subtask>Create invoice status badge component (Draft, Sent, Paid indicators)</subtask>
+        </subtasks>
+      </task>
+      <task epic="1" story="2" id="frontend-mvvm">
+        <title>Frontend - MVVM Layer</title>
+        <acceptanceCriteria>AC: #1, #2, #3, #4, #6, #9, #10</acceptanceCriteria>
+        <subtasks>
+          <subtask>Create `src/lib/hooks/useInvoices.ts` - Custom hook for invoice operations (ViewModel)</subtask>
+          <subtask>Create `src/lib/hooks/usePayments.ts` - Custom hook for payment operations (ViewModel)</subtask>
+          <subtask>Create `src/lib/api/invoices.ts` - API client for invoice endpoints (Model)</subtask>
+          <subtask>Create `src/lib/api/payments.ts` - API client for payment endpoints (Model)</subtask>
+        </subtasks>
+      </task>
+      <task epic="1" story="2" id="frontend-types">
+        <title>Frontend - Types & Validation</title>
+        <acceptanceCriteria>AC: #1, #2, #3, #6</acceptanceCriteria>
+        <subtasks>
+          <subtask>Create `src/types/invoice.ts` - TypeScript types for invoice</subtask>
+          <subtask>Create `src/types/payment.ts` - TypeScript types for payment</subtask>
+          <subtask>Create `src/lib/validation/invoiceSchema.ts` - Zod schema for invoice validation</subtask>
+          <subtask>Create `src/lib/validation/paymentSchema.ts` - Zod schema for payment validation</subtask>
+        </subtasks>
+      </task>
+      <task epic="1" story="2" id="testing">
+        <title>Testing</title>
+        <acceptanceCriteria>AC: #11, #12, #13, #14</acceptanceCriteria>
+        <subtasks>
+          <subtask>Write unit tests: `src/test/java/com/invoiceme/domain/invoice/InvoiceTest.java`</subtask>
+          <subtask>Write unit tests: `src/test/java/com/invoiceme/domain/payment/PaymentTest.java`</subtask>
+          <subtask>Write integration tests: `src/test/java/com/invoiceme/api/invoices/InvoiceControllerTest.java`</subtask>
+          <subtask>Write integration tests: `src/test/java/com/invoiceme/api/payments/PaymentControllerTest.java`</subtask>
+          <subtask>Write E2E test: `tests/e2e/invoice-flow.spec.ts`</subtask>
+          <subtask>Write E2E test: `tests/e2e/payment-flow.spec.ts`</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC-1">Given a customer exists in the system, when a user creates an invoice, then the invoice is created in Draft state and associated with the customer.</criterion>
+    <criterion id="AC-2">Given an invoice exists in Draft state, when a user adds a line item (description, quantity, unit price), then the line item is added to the invoice, and the invoice balance is recalculated correctly (sum of quantity × unit price).</criterion>
+    <criterion id="AC-3">Given an invoice exists in Draft state with line items, when a user updates invoice details, then the changes are persisted, and the updated invoice can be retrieved.</criterion>
+    <criterion id="AC-4">Given an invoice exists in Draft state, when a user marks the invoice as Sent, then the invoice state transitions from Draft to Sent, and the invoice can no longer be modified.</criterion>
+    <criterion id="AC-5">Given an invoice exists in Sent state, when a user attempts to update the invoice, then the update is rejected with an appropriate error message.</criterion>
+    <criterion id="AC-6">Given an invoice exists in Sent state, when a user records a payment for the full invoice amount, then the payment is recorded, the invoice balance is reduced to zero, and the invoice state transitions from Sent to Paid.</criterion>
+    <criterion id="AC-7">Given an invoice exists in Paid state, when a user views the invoice, then the invoice status is displayed as "Paid" with a balance of zero.</criterion>
+    <criterion id="AC-8">Given an invoice exists, when a user views the invoice detail page, then all line items are displayed with description, quantity, unit price, and subtotal, and the total balance is shown.</criterion>
+    <criterion id="AC-9">Given invoices exist in the system, when a user views the invoice list, then invoices can be filtered by status (Draft, Sent, Paid) and by customer.</criterion>
+    <criterion id="AC-10">Given a payment exists for an invoice, when a user views the invoice detail page, then all payments for that invoice are listed with payment amount and date.</criterion>
+    <criterion id="AC-11">All backend unit tests for Invoice and Payment domain entities pass with 80%+ coverage, including state transition logic.</criterion>
+    <criterion id="AC-12">All integration tests for Invoice and Payment API endpoints pass.</criterion>
+    <criterion id="AC-13">E2E test for invoice creation flow (create invoice → add line items → send invoice) passes.</criterion>
+    <criterion id="AC-14">E2E test for payment recording flow (select invoice → record payment → verify balance update) passes.</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>Product Requirements Document</title>
+        <section>Invoice Management, Payment Processing, Invoice Lifecycle</section>
+        <snippet>Invoice Management: Create invoices in Draft state, Update invoice details, Mark invoices as Sent, Support multiple line items per invoice (services/products, quantity, unit price), Retrieve invoice by ID, List invoices by status or customer. Payment Processing: Record payments that apply to invoices, Correctly calculate and update invoice balances, Retrieve payment by ID, List payments for an invoice. Invoice Lifecycle: Enforce state transitions: Draft → Sent → Paid, Maintain accurate balance calculations throughout lifecycle.</snippet>
+      </doc>
+      <doc>
+        <path>docs/tech-spec.md</path>
+        <title>Technical Specification</title>
+        <section>Domain Model Design, State Management, Business Rules, API Design, Database Schema</section>
+        <snippet>Invoice Entity: Manages lifecycle (Draft → Sent → Paid), calculates balance from line items, enforces state transition rules. Payment Entity: Applies to invoice, updates invoice balance, triggers state transition to Paid when balance reaches zero. State Transitions: Enforced in domain layer, only valid transitions allowed. Balance Calculation: Calculated from line items (quantity × unit price), updated when payments applied. Business Rules: Invoices can only be updated in Draft state, Invoices transition to Sent state via explicit action, Invoices transition to Paid state automatically when balance reaches zero.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown</title>
+        <section>Story 1.2: Invoice & Payment Management</section>
+        <snippet>Story 1.2 implements the core business logic for invoice lifecycle management and payment processing, following DDD patterns with rich domain entities that encapsulate business rules. Key Technical Decisions: Invoice entity manages its own lifecycle (state transitions), Invoice entity calculates balance from line items, Payment entity applies to invoice and triggers state transition to Paid when balance reaches zero, State transitions are enforced in domain layer (business rules), Use CQRS pattern: separate commands for write operations, queries for read operations.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/story-mvp-invoicing-system-1.md</path>
+        <title>Story 1.1: Foundation Setup + Customer Management</title>
+        <section>Reference for patterns and implementation approach</section>
+        <snippet>Reference Story 1.1 for: Customer domain entity pattern (follow same DDD approach for Invoice and Payment), CQRS command/query handler patterns, API controller structure and DTO patterns, Frontend MVVM hook and API client patterns, Testing patterns and structure.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <!-- Greenfield project - no existing code artifacts -->
+      <!-- Code will be created following patterns from Story 1.1 and tech-spec.md -->
+    </code>
+    <dependencies>
+      <ecosystem name="backend">
+        <package name="spring-boot-starter-web" version="3.2.0"/>
+        <package name="spring-boot-starter-data-jpa" version="3.2.0"/>
+        <package name="spring-boot-starter-security" version="6.2.0"/>
+        <package name="postgresql" version="42.7.1"/>
+        <package name="h2" version="2.2.224"/>
+        <package name="junit-jupiter" version="5.10.0"/>
+        <package name="mockito-core" version="5.7.0"/>
+        <package name="springdoc-openapi-starter-webmvc-ui" version="2.3.0"/>
+      </ecosystem>
+      <ecosystem name="frontend">
+        <package name="next" version="14.1.0"/>
+        <package name="react" version="18.2.0"/>
+        <package name="typescript" version="5.3.3"/>
+        <package name="react-hook-form" version="7.49.3"/>
+        <package name="zod" version="3.22.4"/>
+        <package name="axios" version="1.6.5"/>
+        <package name="tailwindcss" version="3.4.1"/>
+        <package name="jest" version="29.7.0"/>
+        <package name="@testing-library/react" version="14.1.2"/>
+        <package name="playwright" version="1.41.0"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <type>Architecture Pattern</type>
+      <description>Domain-Driven Design (DDD): Invoice and Payment must be rich domain entities with business logic encapsulated within them. State transitions and balance calculations must be domain logic, not application logic.</description>
+    </constraint>
+    <constraint>
+      <type>Architecture Pattern</type>
+      <description>Command Query Responsibility Segregation (CQRS): Separate command handlers (write operations) from query handlers (read operations). Commands: CreateInvoiceCommand, UpdateInvoiceCommand, AddLineItemCommand, SendInvoiceCommand, RecordPaymentCommand. Queries: GetInvoiceQuery, ListInvoicesQuery, GetPaymentQuery, ListPaymentsQuery.</description>
+    </constraint>
+    <constraint>
+      <type>Architecture Pattern</type>
+      <description>Vertical Slice Architecture (VSA): Organize code around features (invoices, payments) rather than technical layers. Each vertical slice contains: API controller, DTOs, command/query handlers, domain logic.</description>
+    </constraint>
+    <constraint>
+      <type>Architecture Pattern</type>
+      <description>Clean Architecture Layer Separation: Domain Layer (pure business logic, no framework dependencies), Application Layer (use cases, orchestration), Infrastructure Layer (persistence, security), API Layer (REST controllers, DTOs).</description>
+    </constraint>
+    <constraint>
+      <type>Business Rule</type>
+      <description>Invoices can only be updated in Draft state. Once an invoice is marked as Sent, it cannot be modified.</description>
+    </constraint>
+    <constraint>
+      <type>Business Rule</type>
+      <description>Invoice state transitions are enforced: Draft → Sent (via explicit action), Sent → Paid (automatically when balance reaches zero). Invalid transitions must be rejected.</description>
+    </constraint>
+    <constraint>
+      <type>Business Rule</type>
+      <description>Invoice balance is calculated as sum of (quantity × unit price) for all line items. Balance must be recalculated whenever line items are added, modified, or removed.</description>
+    </constraint>
+    <constraint>
+      <type>Business Rule</type>
+      <description>Payment must be associated with an invoice. Payment amount cannot exceed invoice balance (for MVP, assume full payment only). When payment is applied, invoice balance is reduced and state transitions to Paid if balance reaches zero.</description>
+    </constraint>
+    <constraint>
+      <type>Testing Requirement</type>
+      <description>Backend unit tests for Invoice and Payment domain entities must achieve 80%+ coverage, including state transition logic and balance calculation logic.</description>
+    </constraint>
+    <constraint>
+      <type>Testing Requirement</type>
+      <description>All integration tests for Invoice and Payment API endpoints must pass. E2E tests must verify complete invoice creation flow and payment recording flow.</description>
+    </constraint>
+    <constraint>
+      <type>Frontend Pattern</type>
+      <description>MVVM Pattern: Custom React hooks (ViewModels) encapsulate business logic and state, API clients (Models) handle data fetching and mutations, React components (Views) are presentational and delegate to ViewModels.</description>
+    </constraint>
+    <constraint>
+      <type>Frontend Pattern</type>
+      <description>Form validation must use Zod schemas with React Hook Form. Type safety must be maintained with strict TypeScript, no `any` types.</description>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/invoices</name>
+      <kind>REST endpoint</kind>
+      <signature>POST /api/invoices
+Request Body: { customerId: UUID, ... }
+Response: 201 Created with invoice data</signature>
+      <path>src/main/java/com/invoiceme/api/invoices/InvoiceController.java</path>
+    </interface>
+    <interface>
+      <name>GET /api/invoices/{id}</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/invoices/{id}
+Response: 200 OK with invoice data including line items and balance</signature>
+      <path>src/main/java/com/invoiceme/api/invoices/InvoiceController.java</path>
+    </interface>
+    <interface>
+      <name>GET /api/invoices</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/invoices?status={status}&amp;customerId={customerId}
+Response: 200 OK with list of invoices (filtered by status and/or customer)</signature>
+      <path>src/main/java/com/invoiceme/api/invoices/InvoiceController.java</path>
+    </interface>
+    <interface>
+      <name>PUT /api/invoices/{id}</name>
+      <kind>REST endpoint</kind>
+      <signature>PUT /api/invoices/{id}
+Request Body: { ... }
+Response: 200 OK with updated invoice data (only allowed for Draft invoices)</signature>
+      <path>src/main/java/com/invoiceme/api/invoices/InvoiceController.java</path>
+    </interface>
+    <interface>
+      <name>POST /api/invoices/{id}/send</name>
+      <kind>REST endpoint</kind>
+      <signature>POST /api/invoices/{id}/send
+Response: 200 OK with invoice data (state transitioned to Sent)</signature>
+      <path>src/main/java/com/invoiceme/api/invoices/InvoiceController.java</path>
+    </interface>
+    <interface>
+      <name>POST /api/invoices/{id}/items</name>
+      <kind>REST endpoint</kind>
+      <signature>POST /api/invoices/{id}/items
+Request Body: { description: string, quantity: number, unitPrice: decimal }
+Response: 200 OK with updated invoice data (balance recalculated)</signature>
+      <path>src/main/java/com/invoiceme/api/invoices/InvoiceController.java</path>
+    </interface>
+    <interface>
+      <name>POST /api/payments</name>
+      <kind>REST endpoint</kind>
+      <signature>POST /api/payments
+Request Body: { invoiceId: UUID, amount: decimal, paymentDate: timestamp }
+Response: 201 Created with payment data (invoice balance updated, state transitioned if balance reaches zero)</signature>
+      <path>src/main/java/com/invoiceme/api/payments/PaymentController.java</path>
+    </interface>
+    <interface>
+      <name>GET /api/payments/{id}</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/payments/{id}
+Response: 200 OK with payment data</signature>
+      <path>src/main/java/com/invoiceme/api/payments/PaymentController.java</path>
+    </interface>
+    <interface>
+      <name>GET /api/payments/invoice/{invoiceId}</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/payments/invoice/{invoiceId}
+Response: 200 OK with list of payments for the invoice</signature>
+      <path>src/main/java/com/invoiceme/api/payments/PaymentController.java</path>
+    </interface>
+    <interface>
+      <name>InvoiceRepository</name>
+      <kind>JPA Repository Interface</kind>
+      <signature>interface InvoiceRepository extends JpaRepository&lt;Invoice, InvoiceId&gt;
+Methods: findByCustomerId, findByStatus, etc.</signature>
+      <path>src/main/java/com/invoiceme/infrastructure/persistence/invoice/InvoiceRepository.java</path>
+    </interface>
+    <interface>
+      <name>PaymentRepository</name>
+      <kind>JPA Repository Interface</kind>
+      <signature>interface PaymentRepository extends JpaRepository&lt;Payment, PaymentId&gt;
+Methods: findByInvoiceId, etc.</signature>
+      <path>src/main/java/com/invoiceme/infrastructure/persistence/payment/PaymentRepository.java</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Backend testing uses JUnit 5.10.0 with Mockito 5.7.0 for mocking. Integration tests use Spring Boot Test with @SpringBootTest annotation. Test naming follows pattern: MethodName_StateUnderTest_ExpectedBehavior. Coverage target: 80%+ for domain and application layers. Frontend testing uses Jest 29.7.0 with React Testing Library 14.1.2 for component testing, and Playwright 1.41.0 for E2E testing. Test organization: Unit tests co-located with source files, integration tests in src/test/java/com/invoiceme/integration/, E2E tests in tests/e2e/.
+    </standards>
+    <locations>
+      <location>src/test/java/com/invoiceme/domain/invoice/</location>
+      <location>src/test/java/com/invoiceme/domain/payment/</location>
+      <location>src/test/java/com/invoiceme/api/invoices/</location>
+      <location>src/test/java/com/invoiceme/api/payments/</location>
+      <location>tests/e2e/</location>
+    </locations>
+    <ideas>
+      <idea criterionId="AC-1">Test invoice creation with valid customer ID, verify invoice is created in Draft state, verify invoice is associated with customer.</idea>
+      <idea criterionId="AC-2">Test adding line item to Draft invoice, verify line item is added, verify balance is recalculated correctly (sum of quantity × unit price).</idea>
+      <idea criterionId="AC-3">Test updating Draft invoice details, verify changes are persisted, verify updated invoice can be retrieved.</idea>
+      <idea criterionId="AC-4">Test marking Draft invoice as Sent, verify state transitions from Draft to Sent, verify invoice can no longer be modified.</idea>
+      <idea criterionId="AC-5">Test attempting to update Sent invoice, verify update is rejected with appropriate error message.</idea>
+      <idea criterionId="AC-6">Test recording payment for full invoice amount on Sent invoice, verify payment is recorded, verify invoice balance is reduced to zero, verify state transitions from Sent to Paid.</idea>
+      <idea criterionId="AC-7">Test viewing Paid invoice, verify status is displayed as "Paid", verify balance is zero.</idea>
+      <idea criterionId="AC-8">Test viewing invoice detail page, verify all line items are displayed with description, quantity, unit price, and subtotal, verify total balance is shown.</idea>
+      <idea criterionId="AC-9">Test viewing invoice list, verify invoices can be filtered by status (Draft, Sent, Paid), verify invoices can be filtered by customer.</idea>
+      <idea criterionId="AC-10">Test viewing invoice detail page with payments, verify all payments for that invoice are listed with payment amount and date.</idea>
+      <idea criterionId="AC-11">Unit tests: Test Invoice domain entity state transitions (Draft → Sent → Paid), test invalid state transitions are rejected, test balance calculation logic, test Payment domain entity payment application logic. Coverage target: 80%+.</idea>
+      <idea criterionId="AC-12">Integration tests: Test all Invoice API endpoints (POST, GET, PUT, POST /send, POST /items), test all Payment API endpoints (POST, GET, GET /invoice/{id}), verify state transitions work correctly through API, verify balance calculations are accurate.</idea>
+      <idea criterionId="AC-13">E2E test: Create invoice → Add line items → Verify balance updates → Mark invoice as Sent → Verify state transition. Use Playwright to test complete flow in browser.</idea>
+      <idea criterionId="AC-14">E2E test: Select invoice → Record payment → Verify balance update → Verify state transition to Paid if balance reaches zero. Use Playwright to test complete flow in browser.</idea>
+    </ideas>
+  </tests>
+</story-context>
+
+
