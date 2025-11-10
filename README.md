@@ -1,50 +1,46 @@
 # InvoiceMe - Production-Quality ERP-Style Invoicing System
 
-**Version:** 1.0.0  
-**Author:** BMad  
-**Date:** 2025-11-09
-
 ---
 
 ## 📋 Table of Contents
 
-1. [Introduction and Project Goal](#introduction-and-project-goal)
+1. [Introduction](#introduction)
 2. [Architecture Overview](#architecture-overview)
 3. [Business Functionality](#business-functionality)
 4. [Technical Requirements](#technical-requirements)
 5. [Code Quality and Testing](#code-quality-and-testing)
 6. [Getting Started](#getting-started)
-7. [Verifying Requirements Compliance](#verifying-requirements-compliance)
+7. [Quality Assurance and Verification](#quality-assurance-and-verification)
 8. [Project Structure](#project-structure)
 9. [Documentation](#documentation)
 
 ---
 
-## Introduction and Project Goal
+## Introduction
 
-### 1.1 Project Goal
+### What is InvoiceMe?
 
-The goal of the **InvoiceMe** assessment is to challenge candidates to build a small, production-quality ERP-style invoicing system. This project is designed to explicitly demonstrate mastery of modern software architecture principles:
+**InvoiceMe** is a production-quality ERP-style invoicing system designed for managing customers, invoices, and payments. Built with modern software architecture principles, InvoiceMe provides a scalable, maintainable solution for businesses that need robust invoicing capabilities.
+
+### Key Features
+
+InvoiceMe enables businesses to:
+
+- **Manage Customers**: Create, update, and maintain customer relationships
+- **Handle Invoices**: Create invoices with multiple line items, manage invoice lifecycle (Draft → Sent → Paid), and track balances
+- **Process Payments**: Record payments against invoices with automatic balance calculation and state transitions
+- **Secure Access**: JWT-based authentication ensures secure access to all business data
+
+### Architecture Highlights
+
+InvoiceMe is built using enterprise-grade architecture patterns:
 
 - **Domain-Driven Design (DDD)**: Rich domain models with encapsulated business logic
 - **Command Query Responsibility Segregation (CQRS)**: Clean separation between write and read operations
 - **Vertical Slice Architecture (VSA)**: Feature-based organization over technical layers
+- **Clean Architecture**: Clear layer separation for maintainability and testability
 
-The project showcases intelligent and efficient use of AI-assisted development tools while maintaining architectural excellence and code quality.
-
-### 1.2 Context
-
-This assessment mirrors real-world Software-as-a-Service (SaaS) ERP development, concentrating on core business domains:
-
-- **Customers**: Business relationship management
-- **Invoices**: Invoice lifecycle with state transitions
-- **Payments**: Payment processing with balance calculations
-
-Success requires architectural clarity, separation of concerns, and code quality that aligns with enterprise-level, scalable systems.
-
-### 1.3 Problem Statement
-
-While AI tools accelerate code generation, they do not inherently guarantee sound system design. The challenge is to prove that the candidate can provide the architectural guidance necessary to build a correct, maintainable, and scalable application structure, using AI as an accelerator rather than a primary designer.
+This architecture ensures the system is scalable, maintainable, and follows industry best practices for production-ready applications.
 
 ---
 
@@ -99,10 +95,10 @@ classDiagram
         -LocalDateTime paymentDate
     }
     
-    Customer ||--o{ Invoice : "has"
-    Invoice ||--o{ InvoiceLineItem : "contains"
-    Invoice ||--o{ Payment : "receives"
-    Invoice --> InvoiceStatus : "has"
+    Customer "1" --> "*" Invoice
+    Invoice "*" --> "*" InvoiceLineItem
+    Invoice "1" --> "*" Payment
+    Invoice --> InvoiceStatus
 ```
 
 **Key DDD Principles Demonstrated:**
@@ -521,31 +517,31 @@ curl -X POST http://localhost:8080/api/auth/register \
 
 ---
 
-## Verifying Requirements Compliance
+## Quality Assurance and Verification
 
-InvoiceMe includes comprehensive compliance checking tools to verify that all assessment requirements are met.
+InvoiceMe includes comprehensive quality checking tools to verify that all system requirements and architecture patterns are properly implemented.
 
-### Quick Compliance Check
+### Quick Quality Check
 
-**Option 1: Dashboard View (Recommended for Demonstrations)**
+**Option 1: Dashboard View (Recommended for Overview)**
 
 ```bash
 ./compliance-dashboard.sh
 ```
 
-This displays a clean, organized dashboard showing all requirements at a glance with color-coded status indicators.
+This displays a clean, organized dashboard showing all system features and architecture patterns at a glance with color-coded status indicators.
 
-**Option 2: Detailed Compliance Checker**
+**Option 2: Detailed Quality Checker**
 
 ```bash
 ./check-compliance.sh
 ```
 
-This runs comprehensive verification with detailed output for each requirement, including test execution verification.
+This runs comprehensive verification with detailed output for each feature and architecture pattern, including test execution verification.
 
-### What the Compliance Scripts Verify
+### What the Quality Scripts Verify
 
-The compliance scripts verify:
+The quality scripts verify:
 
 1. **Project Goal & Architecture**
    - ✅ ERP-style invoicing system
@@ -700,7 +696,7 @@ When you run `./compliance-dashboard.sh`, you'll see output like:
 SUMMARY
 ═══════════════════════════════════════════════════════════════
 
-All assessment requirements have been verified:
+All system requirements have been verified:
   ✓ Modern architecture principles (DDD, CQRS, VSA)
   ✓ Complete business functionality (Customers, Invoices, Payments)
   ✓ Invoice lifecycle with line items and balance calculation
@@ -708,7 +704,7 @@ All assessment requirements have been verified:
   ✓ Comprehensive testing (Unit, Integration, E2E, Performance)
   ✓ Code quality standards and documentation
 
-✅ InvoiceMe demonstrates full compliance with assessment requirements
+✅ InvoiceMe meets all quality and architecture requirements
 ```
 
 ---
@@ -844,7 +840,7 @@ If SpringDoc OpenAPI is enabled:
 
 ## License
 
-This project is part of an assessment and is provided for demonstration purposes.
+This project is provided for demonstration purposes.
 
 ---
 
@@ -854,6 +850,4 @@ For questions or issues, please refer to the documentation or contact the projec
 
 ---
 
-**Last Updated:** 2025-11-09  
-**Version:** 1.0.0
 
