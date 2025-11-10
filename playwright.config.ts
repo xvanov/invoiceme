@@ -11,8 +11,8 @@ import { defineConfig, devices } from '@playwright/test';
  * - Parallel execution enabled
  */
 export default defineConfig({
-  // Test directory
-  testDir: './tests/e2e',
+  // Test directory - includes both e2e and performance tests
+  testDir: './tests',
   
   // Fully parallel execution within test files
   fullyParallel: true,
