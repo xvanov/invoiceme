@@ -94,8 +94,11 @@ If you need to manually override, you can set:
 ### 7. Get Your Backend URL
 
 1. Go to your service → Settings
-2. Generate a domain (or use the default Railway domain)
-3. Your API will be available at: `https://your-service.railway.app`
+2. Click "Generate Domain" (or use the default Railway domain)
+3. When prompted for **Target Port**, enter: **`8080`**
+   - This is the port your Spring Boot backend listens on
+   - Railway sets the `PORT` environment variable automatically (defaults to 8080)
+4. Your API will be available at: `https://your-service.railway.app`
 
 ## Troubleshooting
 

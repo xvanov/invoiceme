@@ -31,7 +31,7 @@ const userFactoryFixture = base.extend<{ userFactory: UserFactory }>({
  * Provides customer test data factories with auto-cleanup
  * Now uses authenticated requests
  */
-const customerFactoryFixture = base.extend<{ customerFactory: CustomerFactory }>({
+const customerFactoryFixture = base.extend<{ customerFactory: CustomerFactory } & AuthFixture>({
   customerFactory: async ({ request, authCredentials }, use) => {
     // Create factory with auth token
     const factory = new CustomerFactory(request, authCredentials?.token);
@@ -48,7 +48,7 @@ const customerFactoryFixture = base.extend<{ customerFactory: CustomerFactory }>
  * 
  * This fixture runs automatically for all tests that use the page fixture
  */
-const authenticatedPageFixture = base.extend<{ page: any }>({
+const authenticatedPageFixture = base.extend<{ page: any } & AuthFixture>({
   page: async ({ page, authCredentials }, use) => {
     // Set auth token in localStorage before any navigation
     // This runs before page.goto() is called

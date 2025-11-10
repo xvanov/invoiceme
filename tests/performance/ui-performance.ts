@@ -159,14 +159,18 @@ export async function measureNavigationTime(
  * @throws AssertionError if performance threshold is exceeded
  */
 export function assertPerformanceThreshold(result: PerformanceResult): void {
-  expect(result.duration).toBeLessThan(
-    result.threshold,
-    `${result.operation} took ${result.duration.toFixed(2)}ms, expected < ${result.threshold}ms`
+  // Playwright's toBeLessThan doesn't accept a custom message argument
+  // The error message will be automatically generated
+  expect(result.duration, `${result.operation} took ${result.duration.toFixed(2)}ms, expected < ${result.threshold}ms`).toBeLessThan(
+    result.threshold
   );
 }
 
 /**
  * Measure page load time using Playwright's performance metrics.
+ * 
+ * Note: This function uses the browser's Performance Timing API directly,
+ * as Playwright's metrics() method was removed in newer versions.
  * 
  * @param page Playwright page instance
  * @param url URL to navigate to
@@ -176,17 +180,21 @@ export async function measurePageLoadWithMetrics(
   page: Page,
   url: string
 ): Promise<PerformanceResult> {
-  await page.goto(url);
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
   
-  // Get performance metrics from the page
-  const metrics = await page.metrics();
-  const loadTime = metrics?.LoadEventEnd 
-    ? metrics.LoadEventEnd - (metrics.NavigationStart || 0)
-    : 0;
-  
-  // Fallback to performance.now() if metrics are not available
-  const duration = loadTime > 0 ? loadTime : await page.evaluate(() => {
-    return performance.timing.loadEventEnd - performance.timing.navigationStart;
+  // Use browser's Performance Timing API directly
+  const duration = await page.evaluate(() => {
+    const perf = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    if (perf && perf.loadEventEnd) {
+      // PerformanceNavigationTiming uses startTime (which is 0) and loadEventEnd
+      return perf.loadEventEnd;
+    }
+    // Fallback to legacy timing API
+    const timing = performance.timing;
+    if (timing && timing.loadEventEnd && timing.navigationStart) {
+      return timing.loadEventEnd - timing.navigationStart;
+    }
+    return 0;
   });
   
   return {
