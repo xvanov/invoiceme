@@ -4,13 +4,11 @@ spring:
   
   datasource:
     driver-class-name: org.postgresql.Driver
-    # Railway provides DATABASE_URL in format: postgresql://user:pass@host:port/db
-    # Spring Boot needs JDBC format: jdbc:postgresql://host:port/db
-    # Set DATABASE_URL in Railway as: jdbc:postgresql://host:port/db
-    # Or use separate variables below
-    url: ${DATABASE_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:invoiceme}}
-    username: ${DATABASE_USER:${DB_USER:postgres}}
-    password: ${DATABASE_PASSWORD:${DB_PASSWORD:}}
+    # Railway provides POSTGRES_* variables automatically when you add PostgreSQL service
+    # Format: jdbc:postgresql://host:port/database
+    url: ${DATABASE_URL:jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:railway}}
+    username: ${DATABASE_USER:${POSTGRES_USER:postgres}}
+    password: ${DATABASE_PASSWORD:${POSTGRES_PASSWORD:}}
   
   jpa:
     hibernate:

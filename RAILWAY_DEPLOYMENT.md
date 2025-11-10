@@ -38,22 +38,18 @@ Go to your service → Variables tab and add:
 
 ```bash
 # Database Connection
-# Option 1: Use Railway's PostgreSQL service variables (recommended)
-# Railway provides these automatically when you add a PostgreSQL service
-DATABASE_URL=${{Postgres.DATABASE_URL}}
-DATABASE_USER=${{Postgres.DATABASE_USER}}
-DATABASE_PASSWORD=${{Postgres.DATABASE_PASSWORD}}
-
-# Option 2: If Railway provides DATABASE_URL in PostgreSQL URI format,
-# you need to convert it to JDBC format:
-# From: postgresql://user:pass@host:port/db
-# To: jdbc:postgresql://host:port/db
-# Then set:
-# DATABASE_URL=jdbc:postgresql://host:port/db
-# DATABASE_USER=user
-# DATABASE_PASSWORD=pass
+# Railway automatically provides these when you add a PostgreSQL service:
+# - POSTGRES_HOST
+# - POSTGRES_PORT
+# - POSTGRES_DATABASE
+# - POSTGRES_USER
+# - POSTGRES_PASSWORD
+# 
+# The application-prod.yml will use these automatically - NO ACTION NEEDED!
+# Just make sure your PostgreSQL service is connected to your backend service.
 
 # JWT Secret (generate a secure random string, at least 32 characters)
+# Run: openssl rand -base64 32
 JWT_SECRET=your-256-bit-secret-key-for-jwt-token-generation-must-be-at-least-256-bits
 
 # JWT Expiration (optional, defaults to 86400000 = 24 hours)
@@ -73,20 +69,17 @@ openssl rand -base64 32
 # https://www.allkeysgenerator.com/Random/Security-Encryption-Key-Generator.aspx
 ```
 
-**Note:** Railway automatically provides `DATABASE_URL`, `DATABASE_USER`, and `DATABASE_PASSWORD` when you add a PostgreSQL service. However, Railway's `DATABASE_URL` is in PostgreSQL URI format (`postgresql://user:pass@host:port/db`), while Spring Boot needs JDBC format (`jdbc:postgresql://host:port/db`).
+**Note:** Railway automatically provides `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DATABASE`, `POSTGRES_USER`, and `POSTGRES_PASSWORD` when you add a PostgreSQL service. The application configuration (`application-prod.yml`) is already set up to use these variables automatically.
 
-**Quick Fix:** In Railway, when you reference the PostgreSQL service variables, you can manually set `DATABASE_URL` to the JDBC format:
+**No manual configuration needed!** Just make sure:
+1. You've added a PostgreSQL service to your Railway project
+2. The PostgreSQL service is connected to your backend service (Railway does this automatically)
+3. The variables are available in your backend service (check Variables tab)
 
-1. Go to your PostgreSQL service → Variables
-2. Copy the connection details (host, port, database name)
-3. In your backend service → Variables, set:
-   ```
-   DATABASE_URL=jdbc:postgresql://[host]:[port]/[database]
-   DATABASE_USER=${{Postgres.DATABASE_USER}}
-   DATABASE_PASSWORD=${{Postgres.DATABASE_PASSWORD}}
-   ```
-
-Or use Railway's connection string parser (see troubleshooting section below).
+If you need to manually override, you can set:
+- `DATABASE_URL` (JDBC format: `jdbc:postgresql://host:port/database`)
+- `DATABASE_USER` (or it will use `POSTGRES_USER`)
+- `DATABASE_PASSWORD` (or it will use `POSTGRES_PASSWORD`)
 
 ### 6. Deploy
 
@@ -112,23 +105,30 @@ If you see `JAVA_HOME is not defined correctly`, the `nixpacks.toml` file should
 
 **Check:**
 1. PostgreSQL service is running in Railway
-2. Environment variables are set correctly
-3. Database URL format is correct (JDBC format, not PostgreSQL URI format)
+2. PostgreSQL service is connected to your backend service
+3. Environment variables are available (check Variables tab)
 
-**Common Issue:** Railway provides `DATABASE_URL` in format `postgresql://user:pass@host:port/db`, but Spring Boot needs `jdbc:postgresql://host:port/db`.
+**Common Issue:** Railway provides `POSTGRES_*` variables, but they might not be visible in your backend service.
 
-**Solution:** Convert the URL format:
-1. Get the connection string from Railway PostgreSQL service
-2. Extract components:
-   - Format: `postgresql://user:password@host:port/database`
-   - Example: `postgresql://postgres:abc123@containers-us-west-123.railway.app:5432/railway`
-3. Convert to JDBC format:
-   - `jdbc:postgresql://host:port/database`
-   - Example: `jdbc:postgresql://containers-us-west-123.railway.app:5432/railway`
-4. Set in Railway variables:
-   - `DATABASE_URL=jdbc:postgresql://containers-us-west-123.railway.app:5432/railway`
-   - `DATABASE_USER=postgres`
-   - `DATABASE_PASSWORD=abc123`
+**Solution:**
+1. **Check Variables Tab:**
+   - Go to your backend service → Variables
+   - Look for `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DATABASE`, `POSTGRES_USER`, `POSTGRES_PASSWORD`
+   - If they're missing, make sure PostgreSQL service is connected
+
+2. **Connect PostgreSQL Service:**
+   - Go to your PostgreSQL service → Settings
+   - Make sure it's in the same project as your backend
+   - Railway automatically shares variables between connected services
+
+3. **Manual Override (if needed):**
+   If variables aren't available, you can manually set:
+   ```
+   DATABASE_URL=jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}
+   DATABASE_USER=${POSTGRES_USER}
+   DATABASE_PASSWORD=${POSTGRES_PASSWORD}
+   ```
+   Or get the values from PostgreSQL service → Variables and set them directly.
 
 **Test connection:**
 ```bash
@@ -158,13 +158,17 @@ openssl rand -base64 32
 
 | Variable | Required | Description | Example |
 |----------|----------|-------------|---------|
-| `DATABASE_URL` | Yes | PostgreSQL JDBC URL | `jdbc:postgresql://host:5432/dbname` |
-| `DATABASE_USER` | Yes | Database username | `postgres` |
-| `DATABASE_PASSWORD` | Yes | Database password | `your-password` |
+| `POSTGRES_HOST` | Auto | Railway provides automatically | `containers-us-west-123.railway.app` |
+| `POSTGRES_PORT` | Auto | Railway provides automatically | `5432` |
+| `POSTGRES_DATABASE` | Auto | Railway provides automatically | `railway` |
+| `POSTGRES_USER` | Auto | Railway provides automatically | `postgres` |
+| `POSTGRES_PASSWORD` | Auto | Railway provides automatically | `auto-generated` |
 | `JWT_SECRET` | Yes | Secret key for JWT (min 32 chars) | `your-256-bit-secret...` |
 | `JWT_EXPIRATION` | No | JWT expiration in ms (default: 86400000) | `86400000` |
 | `SPRING_PROFILES_ACTIVE` | No | Spring profile (default: prod) | `prod` |
 | `PORT` | Auto | Railway sets this automatically | `8080` |
+
+**Note:** `POSTGRES_*` variables are automatically provided by Railway when you add a PostgreSQL service. You don't need to set them manually - just make sure the PostgreSQL service is connected to your backend service.
 
 ## Next Steps
 
