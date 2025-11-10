@@ -37,6 +37,10 @@ Go to your service → Variables tab and add:
 **Required Variables:**
 
 ```bash
+# CRITICAL: Set Java version for Nixpacks
+# Railway's Nixpacks defaults to Java 17, but we need Java 21
+NIXPACKS_JDK_VERSION=21
+
 # Database Connection
 # Railway automatically provides these when you add a PostgreSQL service:
 # - POSTGRES_HOST
@@ -99,16 +103,20 @@ If you need to manually override, you can set:
 
 **Common Issues:**
 1. `JAVA_HOME is not defined correctly` - Maven wrapper can't find Java
-2. `release version 21 not supported` - Wrong Java version
+2. `release version 21 not supported` - Wrong Java version (MOST COMMON!)
 
 **Solutions:**
-1. **Make sure `nixpacks.toml` is in your repository root** - This ensures Railway uses Java 21
-2. **Check `pom.xml` has explicit Maven compiler plugin** - Should specify Java 21
-3. **Verify build command** - Should use `mvn` (not `./mvnw`) and skip tests: `mvn clean package -DskipTests`
+1. **CRITICAL: Set `NIXPACKS_JDK_VERSION=21` in Railway environment variables**
+   - Railway's Nixpacks defaults to Java 17, even if you specify `jdk21` in `nixpacks.toml`
+   - Go to Railway → Your service → Variables → Add: `NIXPACKS_JDK_VERSION=21`
+   - This forces Nixpacks to use Java 21
+2. **Make sure `nixpacks.toml` is in your repository root** - This ensures Railway uses Java 21
+3. **Check `pom.xml` has explicit Maven compiler plugin** - Should specify Java 21
+4. **Verify build command** - Should use `mvn` (not `./mvnw`) and skip tests: `mvn clean package -DskipTests`
 
 **If build still fails:**
 - Check Railway build logs for the actual error (scroll down in the logs)
-- Make sure all environment variables are set correctly
+- Make sure `NIXPACKS_JDK_VERSION=21` is set in Railway environment variables
 - Verify `nixpacks.toml` specifies `jdk21` in `nixPkgs`
 
 ### Database Connection Fails
@@ -168,6 +176,7 @@ openssl rand -base64 32
 
 | Variable | Required | Description | Example |
 |----------|----------|-------------|---------|
+| `NIXPACKS_JDK_VERSION` | **Yes** | **CRITICAL: Forces Nixpacks to use Java 21** | `21` |
 | `POSTGRES_HOST` | Auto | Railway provides automatically | `containers-us-west-123.railway.app` |
 | `POSTGRES_PORT` | Auto | Railway provides automatically | `5432` |
 | `POSTGRES_DATABASE` | Auto | Railway provides automatically | `railway` |
@@ -178,7 +187,9 @@ openssl rand -base64 32
 | `SPRING_PROFILES_ACTIVE` | No | Spring profile (default: prod) | `prod` |
 | `PORT` | Auto | Railway sets this automatically | `8080` |
 
-**Note:** `POSTGRES_*` variables are automatically provided by Railway when you add a PostgreSQL service. You don't need to set them manually - just make sure the PostgreSQL service is connected to your backend service.
+**Note:** 
+- **`NIXPACKS_JDK_VERSION=21` is REQUIRED** - Railway's Nixpacks defaults to Java 17, so you must set this to use Java 21
+- `POSTGRES_*` variables are automatically provided by Railway when you add a PostgreSQL service. You don't need to set them manually - just make sure the PostgreSQL service is connected to your backend service.
 
 ## Next Steps
 

@@ -18,9 +18,13 @@ This is a quick reference guide for deploying InvoiceMe. For detailed instructio
 
 3. **Configure Environment Variables:**
    ```
-   DATABASE_URL=jdbc:postgresql://[host]:[port]/[database]
-   DATABASE_USER=[username]
-   DATABASE_PASSWORD=[password]
+   # CRITICAL: Force Java 21 (Railway defaults to Java 17)
+   NIXPACKS_JDK_VERSION=21
+   
+   # Database (auto-provided by Railway PostgreSQL service)
+   # No action needed - Railway provides POSTGRES_* variables automatically
+   
+   # JWT Secret (generate with: openssl rand -base64 32)
    JWT_SECRET=[generate with: openssl rand -base64 32]
    JWT_EXPIRATION=86400000
    SPRING_PROFILES_ACTIVE=prod
