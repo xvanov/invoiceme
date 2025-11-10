@@ -95,11 +95,21 @@ If you need to manually override, you can set:
 
 ## Troubleshooting
 
-### Build Fails with JAVA_HOME Error
+### Build Fails with JAVA_HOME or Java Version Error
 
-If you see `JAVA_HOME is not defined correctly`, the `nixpacks.toml` file should fix this by using Maven directly instead of the wrapper.
+**Common Issues:**
+1. `JAVA_HOME is not defined correctly` - Maven wrapper can't find Java
+2. `release version 21 not supported` - Wrong Java version
 
-**Solution:** Make sure `nixpacks.toml` is in your repository root.
+**Solutions:**
+1. **Make sure `nixpacks.toml` is in your repository root** - This ensures Railway uses Java 21
+2. **Check `pom.xml` has explicit Maven compiler plugin** - Should specify Java 21
+3. **Verify build command** - Should use `mvn` (not `./mvnw`) and skip tests: `mvn clean package -DskipTests`
+
+**If build still fails:**
+- Check Railway build logs for the actual error (scroll down in the logs)
+- Make sure all environment variables are set correctly
+- Verify `nixpacks.toml` specifies `jdk21` in `nixPkgs`
 
 ### Database Connection Fails
 
