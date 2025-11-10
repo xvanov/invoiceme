@@ -4,3 +4,4 @@ import java.util.UUID;
 
 public record GetInvoiceQuery(UUID invoiceId) {}
 
+

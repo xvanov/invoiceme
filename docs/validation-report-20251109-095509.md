@@ -791,3 +791,4 @@ Pass Rate: 6/9 (66.7%)
 **Report saved to:** `/Users/kalin.ivanov/rep/invoiceme/docs/validation-report-20251109-095509.md`
 
 
+

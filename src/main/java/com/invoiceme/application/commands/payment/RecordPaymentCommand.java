@@ -19,3 +19,4 @@ public record RecordPaymentCommand(
     LocalDateTime paymentDate
 ) {}
 
+

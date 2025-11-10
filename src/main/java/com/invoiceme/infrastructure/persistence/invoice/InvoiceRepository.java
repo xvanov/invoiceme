@@ -15,3 +15,4 @@ public interface InvoiceRepository extends JpaRepository<Invoice, UUID> {
     List<Invoice> findByCustomerIdAndStatus(UUID customerId, InvoiceStatus status);
 }
 
+
