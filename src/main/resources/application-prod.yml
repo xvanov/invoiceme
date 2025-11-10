@@ -5,10 +5,11 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     # Railway provides POSTGRES_* variables automatically when you add PostgreSQL service
-    # Format: jdbc:postgresql://host:port/database
-    url: ${DATABASE_URL:jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:railway}}
-    username: ${DATABASE_USER:${POSTGRES_USER:postgres}}
-    password: ${DATABASE_PASSWORD:${POSTGRES_PASSWORD:}}
+    # Railway also provides DATABASE_URL in postgresql:// format, but we need jdbc:postgresql://
+    # So we construct the JDBC URL from POSTGRES_* variables instead
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DATABASE:railway}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:}
   
   jpa:
     hibernate:
@@ -34,6 +35,8 @@ logging:
     root: WARN
 
 jwt:
-  secret: ${JWT_SECRET}
+  # JWT_SECRET is required - must be set as environment variable
+  # Railway will provide this via environment variables
+  secret: ${JWT_SECRET:}
   expiration: ${JWT_EXPIRATION:86400000}
 
